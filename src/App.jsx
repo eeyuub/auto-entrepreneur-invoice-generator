@@ -3,7 +3,8 @@ import { PDFDownloadLink, PDFViewer } from '@react-pdf/renderer';
 import InvoiceForm from './components/InvoiceForm';
 import InvoicePDF from './components/InvoicePDF';
 import Login from './components/Login';
-import { FileText, Download, RefreshCw } from 'lucide-react';
+import SavedDocuments from './components/SavedDocuments';
+import { FileText, Download, RefreshCw, Save, History } from 'lucide-react';
 import initialData from './data/userProfile.json';
 
 function App() {
@@ -34,6 +35,8 @@ function App() {
   });
 
   const [showPreview, setShowPreview] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   // Auto-calculate total
   useEffect(() => {
@@ -81,6 +84,36 @@ function App() {
     setIsAuthenticated(true);
   };
 
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      const payload = {
+        type: data.docSettings.type,
+        clientName: data.clientInfo.name,
+        date: data.docSettings.date,
+        total: data.total,
+        content: data
+      };
+      
+      const response = await fetch('/api/documents', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      
+      if (!response.ok) throw new Error('Failed to save');
+      alert('Document saved successfully!');
+    } catch (err) {
+      alert('Error saving document: ' + err.message);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const loadDocument = (loadedData) => {
+    setData(loadedData);
+  };
+
   if (!isAuthenticated) {
     return <Login onLogin={handleLogin} />;
   }
@@ -95,6 +128,21 @@ function App() {
             <h1 className="text-xl font-bold tracking-tight">Auto-Entrepreneur <span className="text-blue-400">Invoice</span> Generator</h1>
           </div>
           <div className="flex gap-4">
+             <button
+              onClick={handleSave}
+              disabled={saving}
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 rounded transition-colors text-sm font-medium disabled:opacity-50"
+             >
+               <Save className="w-4 h-4" />
+               {saving ? 'Saving...' : 'Save'}
+             </button>
+             <button
+              onClick={() => setShowHistory(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded transition-colors text-sm font-medium"
+             >
+               <History className="w-4 h-4" />
+               History
+             </button>
              <button
               onClick={() => setShowPreview(!showPreview)}
               className="hidden md:flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded transition-colors text-sm font-medium"
@@ -145,6 +193,13 @@ function App() {
           )}
         </div>
       </main>
+      {/* History Sidebar */}
+      {showHistory && (
+        <SavedDocuments 
+          onClose={() => setShowHistory(false)} 
+          onLoad={loadDocument} 
+        />
+      )}
     </div>
   );
 }
