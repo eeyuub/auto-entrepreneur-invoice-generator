@@ -1,0 +1,31 @@
+{
+  "myInfo": {
+    "name": "Ayoub BARAOUI",
+    "address": "Nr 2134 Hay Mohammadi, 80000 Agadir",
+    "phone": "0762-54-56-38",
+    "email": "ayoub.baraoui.02@gmail.com",
+    "ice": "003844773000044",
+    "if": "68791221",
+    "aeId": "49206007",
+    "cin": "J562015"
+  },
+  "clientInfo": {
+    "name": "",
+    "address": "",
+    "ice": ""
+  },
+  "docSettings": {
+    "type": "FACTURE",
+    "number": "2025/001",
+    "date": ""
+  },
+  "items": [
+    {
+      "description": "Service de consultation",
+      "quantity": 1,
+      "price": 1000
+    }
+  ],
+  "total": 1000,
+  "totalInWords": ""
+}
