@@ -57,6 +57,19 @@ A professional, compliant, and easy-to-use invoice and quote generator designed 
 This application uses a client-side environment variable (`VITE_SECRET_KEY`) for basic access control. 
 -   **Note**: This is intended for personal local use. Since the key is exposed to the client bundle, do not rely on this for hosting sensitive public-facing applications without adding a real backend authentication layer.
 
+## 🚀 Deployment (Coolify)
+
+If you are deploying this application on **Coolify**, follow these settings to avoid "White Page" errors:
+
+1.  **Application Settings**:
+    *   **Static Site**: Enabled
+    *   **SPA (Single Page Application)**: Enabled (redirects all traffic to `index.html`)
+    *   **Publish Directory**: `dist`
+    *   **Build Command**: `npm run build`
+
+2.  **Configuration**:
+    *   The project is pre-configured with `base: './'` in `vite.config.js` to ensure assets load correctly with relative paths.
+
 ## 📄 License
 
 MIT
