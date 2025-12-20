@@ -17,5 +17,9 @@ RUN npm run build
 # Expose the port
 EXPOSE 9911
 
+# Set default environment variables
+ENV PORT=9911
+ENV NODE_ENV=production
+
 # Start the server
 CMD ["npm", "start"]
