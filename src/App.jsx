@@ -4,7 +4,7 @@ import InvoiceForm from './components/InvoiceForm';
 import InvoicePDF from './components/InvoicePDF';
 import Login from './components/Login';
 import SavedDocuments from './components/SavedDocuments';
-import { FileText, Download, RefreshCw, Save, History } from 'lucide-react';
+import { FileText, Download, RefreshCw, Save, History, PlusCircle } from 'lucide-react';
 import initialData from './data/userProfile.json';
 
 function App() {
@@ -34,6 +34,7 @@ function App() {
     }
   });
 
+  const [currentDocId, setCurrentDocId] = useState(null);
   const [showPreview, setShowPreview] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -95,14 +96,29 @@ function App() {
         content: data
       };
       
-      const response = await fetch('/api/documents', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
+      let response;
+      if (currentDocId) {
+        response = await fetch(`/api/documents/${currentDocId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      } else {
+        response = await fetch('/api/documents', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+      }
       
       if (!response.ok) throw new Error('Failed to save');
-      alert('Document saved successfully!');
+      const result = await response.json();
+      
+      if (!currentDocId && result.data && result.data.id) {
+        setCurrentDocId(result.data.id);
+      }
+      
+      alert(currentDocId ? 'Document updated successfully!' : 'Document saved successfully!');
     } catch (err) {
       alert('Error saving document: ' + err.message);
     } finally {
@@ -110,8 +126,22 @@ function App() {
     }
   };
 
-  const loadDocument = (loadedData) => {
+  const loadDocument = (loadedData, id) => {
     setData(loadedData);
+    setCurrentDocId(id);
+  };
+
+  const handleNew = () => {
+    if (confirm('Create new document? Unsaved changes will be lost.')) {
+      setData({
+        ...initialData,
+        docSettings: {
+          ...initialData.docSettings,
+          date: new Date().toISOString().split('T')[0]
+        }
+      });
+      setCurrentDocId(null);
+    }
   };
 
   if (!isAuthenticated) {
@@ -128,6 +158,13 @@ function App() {
             <h1 className="text-xl font-bold tracking-tight">Auto-Entrepreneur <span className="text-blue-400">Invoice</span> Generator</h1>
           </div>
           <div className="flex gap-4">
+             <button
+              onClick={handleNew}
+              className="flex items-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded transition-colors text-sm font-medium"
+             >
+               <PlusCircle className="w-4 h-4" />
+               New
+             </button>
              <button
               onClick={handleSave}
               disabled={saving}

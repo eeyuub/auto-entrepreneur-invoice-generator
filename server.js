@@ -1,8 +1,11 @@
+import 'dotenv/config';
 import express from 'express';
-import sqlite3 from 'sqlite3';
+import pg from 'pg';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
+
+const { Pool } = pg;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -15,86 +18,130 @@ app.use(cors());
 app.use(express.json());
 
 // Database Setup
-const dbPath = process.env.DB_PATH || path.join(__dirname, 'invoices.db');
-const db = new sqlite3.Database(dbPath, (err) => {
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL
+});
+
+// Test connection and create table
+pool.connect((err, client, release) => {
   if (err) {
-    console.error('Error opening database', err.message);
-  } else {
-    console.log('Connected to the SQLite database.');
-    db.run(`CREATE TABLE IF NOT EXISTS documents (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
+    return console.error('Error acquiring client', err.stack);
+  }
+  console.log('Connected to PostgreSQL database');
+  
+  const createTableQuery = `
+    CREATE TABLE IF NOT EXISTS documents (
+      id SERIAL PRIMARY KEY,
       type TEXT,
       clientName TEXT,
       date TEXT,
       total REAL,
       content TEXT,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-    )`);
-  }
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `;
+  
+  client.query(createTableQuery, (err, result) => {
+    release();
+    if (err) {
+      return console.error('Error executing query', err.stack);
+    }
+    console.log('Table "documents" is ready');
+  });
 });
 
 // API Routes
 
 // Get all documents
-app.get('/api/documents', (req, res) => {
-  const sql = 'SELECT id, type, clientName, date, total, created_at FROM documents ORDER BY created_at DESC';
-  db.all(sql, [], (err, rows) => {
-    if (err) {
-      res.status(400).json({ error: err.message });
-      return;
-    }
+app.get('/api/documents', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT id, type, clientname as "clientName", date, total, created_at FROM documents ORDER BY created_at DESC');
     res.json({
       message: 'success',
-      data: rows
+      data: result.rows
     });
-  });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 });
 
 // Get single document
-app.get('/api/documents/:id', (req, res) => {
-  const sql = 'SELECT * FROM documents WHERE id = ?';
-  const params = [req.params.id];
-  db.get(sql, params, (err, row) => {
-    if (err) {
-      res.status(400).json({ error: err.message });
-      return;
+app.get('/api/documents/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const result = await pool.query('SELECT id, type, clientname as "clientName", date, total, content, created_at FROM documents WHERE id = $1', [id]);
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Document not found' });
     }
+
     res.json({
       message: 'success',
-      data: row
+      data: result.rows[0]
     });
-  });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 });
 
 // Create new document
-app.post('/api/documents', (req, res) => {
-  const { type, clientName, date, total, content } = req.body;
-  const sql = 'INSERT INTO documents (type, clientName, date, total, content) VALUES (?,?,?,?,?)';
-  const params = [type, clientName, date, total, JSON.stringify(content)];
-  
-  db.run(sql, params, function (err) {
-    if (err) {
-      res.status(400).json({ error: err.message });
-      return;
-    }
+app.post('/api/documents', async (req, res) => {
+  try {
+    const { type, clientName, date, total, content } = req.body;
+    const sql = 'INSERT INTO documents (type, clientName, date, total, content) VALUES ($1, $2, $3, $4, $5) RETURNING id';
+    const params = [type, clientName, date, total, JSON.stringify(content)];
+    
+    const result = await pool.query(sql, params);
+    
     res.json({
       message: 'success',
-      data: { id: this.lastID }
+      data: { id: result.rows[0].id }
     });
-  });
+  } catch (err) {
+    console.error('Error in POST /api/documents:', err);
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Update existing document
+app.put('/api/documents/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { type, clientName, date, total, content } = req.body;
+    const sql = 'UPDATE documents SET type = $1, clientName = $2, date = $3, total = $4, content = $5 WHERE id = $6';
+    const params = [type, clientName, date, total, JSON.stringify(content), id];
+    
+    const result = await pool.query(sql, params);
+    
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Document not found' });
+    }
+
+    res.json({
+      message: 'updated',
+      changes: result.rowCount
+    });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 });
 
 // Delete document
-app.delete('/api/documents/:id', (req, res) => {
-  const sql = 'DELETE FROM documents WHERE id = ?';
-  const params = [req.params.id];
-  db.run(sql, params, function (err) {
-    if (err) {
-      res.status(400).json({ error: err.message });
-      return;
+app.delete('/api/documents/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const sql = 'DELETE FROM documents WHERE id = $1';
+    
+    const result = await pool.query(sql, [id]);
+    
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Document not found' });
     }
-    res.json({ message: 'deleted', changes: this.changes });
-  });
+
+    res.json({ message: 'deleted', changes: result.rowCount });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
 });
 
 // Serve static files in production
@@ -107,4 +154,10 @@ if (process.env.NODE_ENV === 'production') {
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+});
+
+// Global error handler
+app.use((err, req, res, next) => {
+  console.error('Unhandled Error:', err);
+  res.status(500).send('Internal Server Error');
 });

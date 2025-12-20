@@ -45,7 +45,7 @@ const SavedDocuments = ({ onClose, onLoad }) => {
       if (!response.ok) throw new Error('Failed to load document');
       const result = await response.json();
       const content = JSON.parse(result.data.content);
-      onLoad(content);
+      onLoad(content, result.data.id);
       onClose();
     } catch (err) {
       alert('Error loading document: ' + err.message);
