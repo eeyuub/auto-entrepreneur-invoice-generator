@@ -67,8 +67,14 @@ If you are deploying this application on **Coolify**, follow these settings to a
     *   **Publish Directory**: `dist`
     *   **Build Command**: `npm run build`
 
-2.  **Configuration**:
+2.  **Environment Variables**:
+    *   You **MUST** add `VITE_SECRET_KEY` in the Coolify "Environment Variables" tab.
+    *   Example: Key: `VITE_SECRET_KEY`, Value: `your_password_here`.
+    *   *Note: Without this, the login might fail or behave unexpectedly.*
+
+3.  **Configuration**:
     *   The project is pre-configured with `base: './'` in `vite.config.js` to ensure assets load correctly with relative paths.
+    *   **Node Polyfills**: Added to support PDF generation in production environments.
 
 ## 📄 License
 
