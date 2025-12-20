@@ -1,16 +1,62 @@
-# React + Vite
+# Moroccan Auto-Entrepreneur Invoice & Devis Generator
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A professional, compliant, and easy-to-use invoice and quote generator designed specifically for Moroccan Auto-Entrepreneurs. Built with React, Tailwind CSS, and optimized for high-quality PDF output.
 
-Currently, two official plugins are available:
+## 🚀 Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+-   **Moroccan Legal Compliance**: Includes mandatory fields like ICE (Identifiant Commun de l'entreprise), IF (Identifiant Fiscal), and Taxe Professionnelle.
+-   **Professional PDF Output**: Generates clean, A4-sized PDFs with a dedicated signature area and legal footer ("Exonéré de la TVA en vertu de l'article 91...").
+-   **Dynamic Document Types**: Toggle easily between **FACTURE** (Invoice) and **DEVIS** (Quote).
+-   **Secure Access**: Simple login system protected by a secret key (configurable via `.env`).
+-   **Session Persistence**: Stays logged in for 24 hours per browser.
+-   **Auto-Calculation**: Automatically calculates line totals and grand totals.
+-   **Smart Defaults**: Pre-fills your personal information from a configuration file so you don't have to type it every time.
 
-## React Compiler
+## 🛠️ Tech Stack
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+-   **Frontend**: React (Vite)
+-   **Styling**: Tailwind CSS
+-   **PDF Generation**: `@react-pdf/renderer`
+-   **Icons**: Lucide React
 
-## Expanding the ESLint configuration
+## 📦 Installation & Setup
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/eeyuub/auto-entrepreneur-invoice-generator.git
+    cd auto-entrepreneur-invoice-generator
+    ```
+
+2.  **Install dependencies**
+    ```bash
+    npm install
+    ```
+
+3.  **Configure Environment Variables**
+    Copy the sample environment file and set your secret key and port.
+    ```bash
+    cp .env.sample .env
+    ```
+    Open `.env` and update the values:
+    ```env
+    VITE_SECRET_KEY=your_secure_password
+    VITE_PORT=3000
+    ```
+
+4.  **Customize Your Profile**
+    Edit `src/data/userProfile.json` to add your personal information (Name, ICE, IF, Address, etc.). This data will appear as the default "Emitter" on all documents.
+
+5.  **Run the Application**
+    ```bash
+    npm run dev
+    ```
+    Open your browser at `http://localhost:3000` (or your configured port).
+
+## 🔒 Security
+
+This application uses a client-side environment variable (`VITE_SECRET_KEY`) for basic access control. 
+-   **Note**: This is intended for personal local use. Since the key is exposed to the client bundle, do not rely on this for hosting sensitive public-facing applications without adding a real backend authentication layer.
+
+## 📄 License
+
+MIT
