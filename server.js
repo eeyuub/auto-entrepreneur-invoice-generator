@@ -69,10 +69,20 @@ pool.connect((err, client, release) => {
 
 // --- Clients API ---
 
-// Get all clients
+// Get all clients with document counts
 app.get('/api/clients', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM clients ORDER BY name ASC');
+    const query = `
+      SELECT 
+        c.*,
+        COUNT(CASE WHEN d.type = 'FACTURE' THEN 1 END) as invoices_count,
+        COUNT(CASE WHEN d.type = 'DEVIS' THEN 1 END) as quotes_count
+      FROM clients c
+      LEFT JOIN documents d ON d.clientName = c.name
+      GROUP BY c.id
+      ORDER BY c.name ASC
+    `;
+    const result = await pool.query(query);
     res.json({
       message: 'success',
       data: result.rows
@@ -118,6 +128,24 @@ app.put('/api/clients/:id', async (req, res) => {
       message: 'success',
       data: result.rows[0]
     });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Delete client
+app.delete('/api/clients/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const sql = 'DELETE FROM clients WHERE id = $1';
+    
+    const result = await pool.query(sql, [id]);
+    
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Client not found' });
+    }
+
+    res.json({ message: 'deleted', changes: result.rowCount });
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
