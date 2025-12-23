@@ -314,7 +314,7 @@ const InvoicePDF = ({ data }) => {
         </View>
 
         {/* Footer */}
-        <View style={styles.footer}>
+        <View style={styles.footer} fixed>
           <Text style={[styles.legalText, { fontWeight: 'bold', color: '#64748b' }]}>
             Exonéré de la TVA en vertu de l'article 91 du Code Général des Impôts.
           </Text>
