@@ -63,14 +63,16 @@ const DashboardHome = () => {
   };
 
   // Calculate Stats
-  const totalInvoices = documents.length;
-  const totalRevenue = documents.reduce((sum, doc) => sum + (doc.total || 0), 0);
-  const thisMonthRevenue = documents
+  const invoicesOnly = documents.filter(doc => doc.type === 'FACTURE');
+  
+  const totalInvoices = invoicesOnly.length;
+  const totalRevenue = invoicesOnly.reduce((sum, doc) => sum + (doc.total || 0), 0);
+  const thisMonthRevenue = invoicesOnly
     .filter(doc => new Date(doc.date).getMonth() === new Date().getMonth())
     .reduce((sum, doc) => sum + (doc.total || 0), 0);
 
   // Prepare Chart Data (Last 6 months)
-  const chartData = documents.reduce((acc, doc) => {
+  const chartData = invoicesOnly.reduce((acc, doc) => {
     const date = new Date(doc.date);
     const month = date.toLocaleString('default', { month: 'short' });
     const existing = acc.find(item => item.name === month);
