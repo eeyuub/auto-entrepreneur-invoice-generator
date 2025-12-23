@@ -1,42 +1,32 @@
-# Deployment Guide for Coolify
+# Frontend Deployment Guide
 
-This project is configured to be easily deployed on Coolify using Docker.
+This directory contains the React frontend application. It is containerized using Docker and served via Vite Preview.
 
-## Prerequisites
+## Port Configuration
 
-1.  A Coolify instance.
-2.  A Git repository (GitHub, GitLab, etc.) connected to your Coolify instance.
+The container is configured to listen on port **9911**.
 
-## Deployment Steps
+*   **Internal Port**: `9911`
+*   **Docker Expose**: `9911`
 
-1.  **Push your code** to your Git repository.
-2.  **Login to Coolify**.
-3.  **Create a New Resource**:
-    *   Select **Project** -> **New** -> **Public Repository** (or Private if applicable).
-    *   Paste your repository URL.
-    *   Select the branch (e.g., `main` or `master`).
-4.  **Configuration**:
-    *   **Build Pack**: Select `Docker`.
-        *   Coolify should automatically detect the `Dockerfile` in the root directory.
-    *   **Port**: ensure it is set to `3001` (or whatever `PORT` you set in env vars).
-5.  **Environment Variables**:
-    *   Go to the **Environment Variables** tab in Coolify for your service.
-    *   Add the following variables (copy from your `.env` file):
-        *   `DATABASE_URL`: Your PostgreSQL connection string.
-        *   `PORT`: `3001` (optional, defaults to 3001).
-        *   `NODE_ENV`: `production`
-6.  **Deploy**:
-    *   Click the **Deploy** button.
+## Coolify Deployment Steps
 
-## What happens during deployment?
+1.  **Repository**: Connect your repository.
+2.  **Build Pack**: Select **Docker**.
+3.  **Port Configuration**:
+    *   **IMPORTANT**: You must set the **Ports Exposes** (or Internal Port) to `9911` in your Coolify service configuration.
+    *   If you leave it as default (often 3000 or 80), you will get a **Bad Gateway** error.
+4.  **Environment Variables**:
+    *   `VITE_API_URL`: URL of your backend API (e.g., `https://api.yourdomain.com`).
 
-The included `Dockerfile` performs the following steps:
-1.  Installs dependencies (`npm install`).
-2.  Builds the React frontend (`npm run build`).
-3.  Starts the Express server (`npm start`).
-    *   The server is configured to serve the built frontend files from the `dist` folder when in production mode.
+## Local Testing with Docker
 
-## Troubleshooting
+```bash
+# Build the image
+docker build -t invoice-frontend .
 
-*   **Database Connection**: Ensure your `DATABASE_URL` is correct and accessible from the Coolify server. If the database is also on Coolify, use the internal network URL provided by Coolify.
-*   **Build Errors**: Check the deployment logs in Coolify. Common issues might be missing environment variables during build (though this setup mostly uses them at runtime).
+# Run the container
+docker run -p 9911:9911 invoice-frontend
+```
+
+Access at `http://localhost:9911`
