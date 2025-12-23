@@ -4,6 +4,7 @@ import { AppProvider, useAppContext } from './context/AppContext';
 import DashboardLayout from './layouts/DashboardLayout';
 import DashboardHome from './pages/DashboardHome';
 import Invoices from './pages/Invoices';
+import Clients from './pages/Clients';
 import CreateInvoice from './pages/CreateInvoice';
 import Login from './components/Login';
 
@@ -38,6 +39,7 @@ function App() {
           }>
             <Route index element={<DashboardHome />} />
             <Route path="invoices" element={<Invoices />} />
+            <Route path="clients" element={<Clients />} />
             <Route path="create" element={<CreateInvoice />} />
           </Route>
 

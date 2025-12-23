@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, FileText, PlusCircle, LogOut, Menu, X } from 'lucide-react';
+import { LayoutDashboard, FileText, PlusCircle, LogOut, Menu, X, Users } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 
 const DashboardLayout = () => {
@@ -16,7 +16,7 @@ const DashboardLayout = () => {
   const navItems = [
     { to: '/', icon: <LayoutDashboard size={20} />, label: 'Dashboard' },
     { to: '/invoices', icon: <FileText size={20} />, label: 'Invoices' },
-    { to: '/create', icon: <PlusCircle size={20} />, label: 'Create Invoice' },
+    { to: '/clients', icon: <Users size={20} />, label: 'Clients' },
   ];
 
   return (

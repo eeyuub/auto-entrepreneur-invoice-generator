@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Trash2, Edit, FileText, Download, Filter } from 'lucide-react';
+import { Search, Trash2, Edit, FileText, Download, Filter, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 
@@ -8,7 +8,7 @@ const Invoices = () => {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('ALL'); // ALL, FACTURE, DEVIS
-  const { loadInvoice } = useAppContext();
+  const { loadInvoice, createNewInvoice } = useAppContext();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,6 +27,11 @@ const Invoices = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleCreateNew = () => {
+    createNewInvoice();
+    navigate('/create');
   };
 
   const handleDelete = async (id, e) => {
@@ -76,26 +81,35 @@ const Invoices = () => {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <h2 className="text-2xl font-bold text-slate-800">Invoices & Quotes</h2>
-        <div className="flex gap-4 w-full md:w-auto">
-            <div className="relative flex-1 md:w-64">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
-                <input 
-                    type="text" 
-                    placeholder="Search clients..." 
-                    className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
-            </div>
-            <select 
-                className="px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-                value={filterType}
-                onChange={(e) => setFilterType(e.target.value)}
+        <div className="flex flex-col md:flex-row gap-4 w-full md:w-auto">
+            <button
+                onClick={handleCreateNew}
+                className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium order-first md:order-last"
             >
-                <option value="ALL">All Types</option>
-                <option value="FACTURE">Facture</option>
-                <option value="DEVIS">Devis</option>
-            </select>
+                <Plus size={18} />
+                Create New
+            </button>
+            <div className="flex gap-4 w-full md:w-auto">
+                <div className="relative flex-1 md:w-64">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+                    <input 
+                        type="text" 
+                        placeholder="Search clients..." 
+                        className="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
+                <select 
+                    className="px-4 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                    value={filterType}
+                    onChange={(e) => setFilterType(e.target.value)}
+                >
+                    <option value="ALL">All Types</option>
+                    <option value="FACTURE">Facture</option>
+                    <option value="DEVIS">Devis</option>
+                </select>
+            </div>
         </div>
       </div>
 
