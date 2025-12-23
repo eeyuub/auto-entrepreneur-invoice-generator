@@ -18,9 +18,9 @@ const InvoiceForm = ({ data, updateData, addItem, removeItem, updateItem }) => {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 md:space-y-8">
       {/* My Info */}
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+      <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm border border-slate-200">
         <h2 className="text-xl font-bold text-slate-800 mb-4 border-b pb-2">Mes Informations (Auto-Entrepreneur)</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="md:col-span-2">
@@ -89,9 +89,9 @@ const InvoiceForm = ({ data, updateData, addItem, removeItem, updateItem }) => {
       </div>
 
       {/* Document Settings & Client Info */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
         {/* Document Settings */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+        <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm border border-slate-200">
           <h2 className="text-xl font-bold text-slate-800 mb-4 border-b pb-2">Paramètres du Document</h2>
           <div className="space-y-4">
             <div className="flex gap-4">
@@ -130,7 +130,7 @@ const InvoiceForm = ({ data, updateData, addItem, removeItem, updateItem }) => {
         </div>
 
         {/* Client Info */}
-        <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
+        <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm border border-slate-200">
           <h2 className="text-xl font-bold text-slate-800 mb-4 border-b pb-2">Informations Client</h2>
           <div className="space-y-4">
             
@@ -207,8 +207,10 @@ const InvoiceForm = ({ data, updateData, addItem, removeItem, updateItem }) => {
       </div>
 
       {/* Items */}
-      <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
-        <h2 className="text-xl font-bold text-slate-800 mb-4 border-b pb-2">Articles & Prestations</h2>
+      <div className="bg-white p-4 md:p-6 rounded-lg shadow-sm border border-slate-200">
+        <div className="flex justify-between items-center mb-4 border-b pb-2">
+          <h2 className="text-xl font-bold text-slate-800">Articles / Services</h2>
+        </div>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
