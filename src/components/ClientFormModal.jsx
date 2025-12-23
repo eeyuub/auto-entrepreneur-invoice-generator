@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const ClientFormModal = ({ onClose, onSuccess, initialData = null }) => {
   const [client, setClient] = useState({
@@ -39,12 +40,13 @@ const ClientFormModal = ({ onClose, onSuccess, initialData = null }) => {
       if (response.ok) {
         const result = await response.json();
         onSuccess(result.data);
+        toast.success(initialData ? 'Client updated successfully' : 'Client created successfully');
         onClose();
       } else {
         throw new Error('Failed to save client');
       }
     } catch (error) {
-      alert('Failed to save client: ' + error.message);
+      toast.error('Failed to save client: ' + error.message);
     }
   };
 

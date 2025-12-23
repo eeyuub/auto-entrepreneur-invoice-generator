@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { TrendingUp, FileText, DollarSign, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { useAppContext } from '../context/AppContext';
 
 const StatCard = ({ title, value, icon: Icon, color }) => (
@@ -58,7 +59,7 @@ const DashboardHome = () => {
       navigate('/create');
     } catch (err) {
       console.error('Error loading document:', err);
-      alert('Failed to load document for editing');
+      toast.error('Failed to load document for editing');
     }
   };
 

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { PDFDownloadLink, PDFViewer } from '@react-pdf/renderer';
 import { Save, RefreshCw, Download, PlusCircle, Eye, EyeOff } from 'lucide-react';
+import toast from 'react-hot-toast';
 import InvoiceForm from '../components/InvoiceForm';
 import InvoicePDF from '../components/InvoicePDF';
 import { useAppContext } from '../context/AppContext';
+import { confirmAlert } from '../utils/confirmToast';
 
 const CreateInvoice = () => {
   const { 
@@ -18,6 +20,16 @@ const CreateInvoice = () => {
   } = useAppContext();
 
   const [showPreview, setShowPreview] = useState(false);
+
+  const handleNew = () => {
+    confirmAlert({
+      message: 'Create new document? Unsaved changes will be lost.',
+      onConfirm: () => {
+        createNewInvoice();
+        toast.success('New document created');
+      }
+    });
+  };
 
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
@@ -34,7 +46,7 @@ const CreateInvoice = () => {
         
         <div className="flex flex-wrap gap-3">
             <button
-              onClick={createNewInvoice}
+              onClick={handleNew}
               className="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors text-sm font-medium"
             >
               <PlusCircle className="w-4 h-4" />

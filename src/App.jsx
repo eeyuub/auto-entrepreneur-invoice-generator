@@ -1,7 +1,9 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
 import { AppProvider, useAppContext } from './context/AppContext';
 import DashboardLayout from './layouts/DashboardLayout';
+import GlobalConfirmDialog from './components/GlobalConfirmDialog';
 import DashboardHome from './pages/DashboardHome';
 import Invoices from './pages/Invoices';
 import Clients from './pages/Clients';
@@ -29,6 +31,8 @@ function App() {
   return (
     <AppProvider>
       <BrowserRouter>
+        <Toaster position="top-right" reverseOrder={false} />
+        <GlobalConfirmDialog />
         <Routes>
           <Route path="/login" element={<LoginWrapper />} />
           

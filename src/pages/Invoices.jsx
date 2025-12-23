@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Trash2, Edit, FileText, Download, Filter, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { useAppContext } from '../context/AppContext';
+import { confirmAlert } from '../utils/confirmToast';
 
 const Invoices = () => {
   const [documents, setDocuments] = useState([]);
@@ -36,18 +38,24 @@ const Invoices = () => {
 
   const handleDelete = async (id, e) => {
     e.stopPropagation();
-    if (!confirm('Are you sure you want to delete this document?')) return;
     
-    try {
-      const response = await fetch(`/api/documents/${id}`, {
-        method: 'DELETE',
-      });
-      if (response.ok) {
-        setDocuments(prev => prev.filter(doc => doc.id !== id));
+    confirmAlert({
+      message: 'Are you sure you want to delete this document?',
+      onConfirm: async () => {
+        try {
+          const response = await fetch(`/api/documents/${id}`, {
+            method: 'DELETE',
+          });
+          if (response.ok) {
+            setDocuments(prev => prev.filter(doc => doc.id !== id));
+            toast.success('Document deleted successfully');
+          }
+        } catch (err) {
+          console.error('Error deleting document:', err);
+          toast.error('Failed to delete document');
+        }
       }
-    } catch (err) {
-      console.error('Error deleting document:', err);
-    }
+    });
   };
 
   const handleEdit = async (doc) => {
@@ -67,7 +75,7 @@ const Invoices = () => {
       navigate('/create');
     } catch (err) {
       console.error('Error loading document:', err);
-      alert('Failed to load document for editing');
+      toast.error('Failed to load document for editing');
     }
   };
 

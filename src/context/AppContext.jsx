@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
+import toast from 'react-hot-toast';
 import initialData from '../data/userProfile.json';
 
 const AppContext = createContext();
@@ -85,18 +86,14 @@ export const AppProvider = ({ children }) => {
   };
 
   const createNewInvoice = () => {
-    if (confirm('Create new document? Unsaved changes will be lost.')) {
-      setInvoiceData({
-        ...initialData,
-        docSettings: {
-          ...initialData.docSettings,
-          date: new Date().toISOString().split('T')[0]
-        }
-      });
-      setCurrentDocId(null);
-      return true;
-    }
-    return false;
+    setInvoiceData({
+      ...initialData,
+      docSettings: {
+        ...initialData.docSettings,
+        date: new Date().toISOString().split('T')[0]
+      }
+    });
+    setCurrentDocId(null);
   };
 
   const loadInvoice = (loadedData, id) => {
@@ -137,10 +134,10 @@ export const AppProvider = ({ children }) => {
         setCurrentDocId(result.data.id);
       }
       
-      alert(currentDocId ? 'Document updated successfully!' : 'Document saved successfully!');
+      toast.success(currentDocId ? 'Document updated successfully!' : 'Document saved successfully!');
       return true;
     } catch (err) {
-      alert('Error saving document: ' + err.message);
+      toast.error('Error saving document: ' + err.message);
       return false;
     } finally {
       setSaving(false);

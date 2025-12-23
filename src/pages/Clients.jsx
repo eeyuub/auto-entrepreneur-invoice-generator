@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Plus, Edit, Trash2, Users, Building, Phone, FileText, File } from 'lucide-react';
+import toast from 'react-hot-toast';
 import ClientFormModal from '../components/ClientFormModal';
+import { confirmAlert } from '../utils/confirmToast';
 
 const Clients = () => {
   const [clients, setClients] = useState([]);
@@ -37,17 +39,22 @@ const Clients = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!confirm('Are you sure you want to delete this client?')) return;
-    try {
-      const response = await fetch(`/api/clients/${id}`, { method: 'DELETE' });
-      if (response.ok) {
-        setClients(clients.filter(c => c.id !== id));
-      } else {
-        alert('Failed to delete client');
+    confirmAlert({
+      message: 'Are you sure you want to delete this client?',
+      onConfirm: async () => {
+        try {
+          const response = await fetch(`/api/clients/${id}`, { method: 'DELETE' });
+          if (response.ok) {
+            setClients(clients.filter(c => c.id !== id));
+            toast.success('Client deleted successfully');
+          } else {
+            toast.error('Failed to delete client');
+          }
+        } catch (error) {
+          toast.error('Error deleting client');
+        }
       }
-    } catch (error) {
-      alert('Error deleting client');
-    }
+    });
   };
 
   const filteredClients = clients.filter(client => 
