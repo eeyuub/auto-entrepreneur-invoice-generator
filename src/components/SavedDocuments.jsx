@@ -1,8 +1,7 @@
 import React from 'react';
 import { X, FileText, Trash2, Download } from 'lucide-react';
 
-const SavedDocuments = ({ onClose, onLoad }) => {
-  const [documents, setDocuments] = React.useState([]);
+const SavedDocuments = ({ onClose, onLoad }) => { const [documents, setDocuments] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState(null);
 
