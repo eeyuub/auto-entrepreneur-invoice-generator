@@ -12,11 +12,14 @@
   "clientInfo": {
     "name": "",
     "address": "",
-    "ice": ""
+    "ice": "",
+    "if": "",
+    "taxePro": "",
+    "phone": ""
   },
   "docSettings": {
     "type": "FACTURE",
-    "number": "2025/001",
+    "number": "001/2025",
     "date": ""
   },
   "items": [

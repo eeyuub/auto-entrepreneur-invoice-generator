@@ -1,9 +1,20 @@
 import React from 'react';
 import { Plus, Trash2 } from 'lucide-react';
+import ClientSelector from './ClientSelector';
 
 const InvoiceForm = ({ data, updateData, addItem, removeItem, updateItem }) => {
   const handleChange = (section, field, value) => {
     updateData(section, field, value);
+  };
+
+  const handleClientSelect = (clientData) => {
+      // Update all client fields at once
+      updateData('clientInfo', 'name', clientData.name);
+      updateData('clientInfo', 'address', clientData.address);
+      updateData('clientInfo', 'ice', clientData.ice);
+      updateData('clientInfo', 'if', clientData.if);
+      updateData('clientInfo', 'taxePro', clientData.taxePro);
+      updateData('clientInfo', 'phone', clientData.phone);
   };
 
   return (
@@ -98,7 +109,7 @@ const InvoiceForm = ({ data, updateData, addItem, removeItem, updateItem }) => {
               </button>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-600 mb-1">Numéro (ex: 2025/001)</label>
+              <label className="block text-sm font-medium text-slate-600 mb-1">Numéro (ex: 001/2025)</label>
               <input
                 type="text"
                 className="input-field"
@@ -122,34 +133,74 @@ const InvoiceForm = ({ data, updateData, addItem, removeItem, updateItem }) => {
         <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
           <h2 className="text-xl font-bold text-slate-800 mb-4 border-b pb-2">Informations Client</h2>
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-600 mb-1">Nom du Client / Société</label>
-              <input
-                type="text"
-                placeholder="Ex: Société X SARL"
-                className="input-field"
-                value={data.clientInfo.name}
-                onChange={(e) => handleChange('clientInfo', 'name', e.target.value)}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-600 mb-1">Adresse</label>
-              <textarea
-                placeholder="Ex: 45 Av..."
-                className="input-field min-h-[80px]"
-                value={data.clientInfo.address}
-                onChange={(e) => handleChange('clientInfo', 'address', e.target.value)}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-slate-600 mb-1">ICE Client (Obligatoire pour les sociétés)</label>
-              <input
-                type="text"
-                placeholder="000..."
-                className="input-field"
-                value={data.clientInfo.ice}
-                onChange={(e) => handleChange('clientInfo', 'ice', e.target.value)}
-              />
+            
+            {/* New Client Selector */}
+            <ClientSelector 
+                currentClient={data.clientInfo} 
+                onSelect={handleClientSelect} 
+            />
+
+            <div className="pt-2 border-t border-slate-100 mt-2">
+                <p className="text-xs text-slate-400 mb-3 uppercase font-bold tracking-wider">Client Details (Auto-filled)</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-slate-600 mb-1">Nom du Client / Société</label>
+                        <input
+                            type="text"
+                            placeholder="Ex: Société X SARL"
+                            className="input-field bg-slate-50"
+                            value={data.clientInfo.name}
+                            onChange={(e) => handleChange('clientInfo', 'name', e.target.value)}
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-600 mb-1">ICE Client</label>
+                        <input
+                            type="text"
+                            placeholder="000..."
+                            className="input-field"
+                            value={data.clientInfo.ice}
+                            onChange={(e) => handleChange('clientInfo', 'ice', e.target.value)}
+                        />
+                    </div>
+                     <div>
+                        <label className="block text-sm font-medium text-slate-600 mb-1">Téléphone</label>
+                        <input
+                            type="text"
+                            placeholder="06..."
+                            className="input-field"
+                            value={data.clientInfo.phone || ''}
+                            onChange={(e) => handleChange('clientInfo', 'phone', e.target.value)}
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-600 mb-1">Identifiant Fiscal (IF)</label>
+                        <input
+                            type="text"
+                            className="input-field"
+                            value={data.clientInfo.if || ''}
+                            onChange={(e) => handleChange('clientInfo', 'if', e.target.value)}
+                        />
+                    </div>
+                     <div>
+                        <label className="block text-sm font-medium text-slate-600 mb-1">Taxe Pro / AE ID</label>
+                        <input
+                            type="text"
+                            className="input-field"
+                            value={data.clientInfo.taxePro || ''}
+                            onChange={(e) => handleChange('clientInfo', 'taxePro', e.target.value)}
+                        />
+                    </div>
+                    <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-slate-600 mb-1">Adresse</label>
+                        <textarea
+                            placeholder="Ex: 45 Av..."
+                            className="input-field min-h-[60px]"
+                            value={data.clientInfo.address}
+                            onChange={(e) => handleChange('clientInfo', 'address', e.target.value)}
+                        />
+                    </div>
+                </div>
             </div>
           </div>
         </div>

@@ -241,10 +241,28 @@ const InvoicePDF = ({ data }) => {
             <Text style={styles.boxTitle}>Client</Text>
             <Text style={{ fontWeight: 'bold', marginBottom: 2 }}>{clientInfo.name}</Text>
             <Text style={{ marginBottom: 4 }}>{clientInfo.address}</Text>
+            {clientInfo.phone && (
+                <View style={styles.row}>
+                    <Text style={styles.label}>Tél:</Text>
+                    <Text>{clientInfo.phone}</Text>
+                </View>
+            )}
             <View style={styles.row}>
               <Text style={styles.label}>ICE:</Text>
               <Text>{clientInfo.ice || 'N/A'}</Text>
             </View>
+            {clientInfo.if && (
+                <View style={styles.row}>
+                    <Text style={styles.label}>IF:</Text>
+                    <Text>{clientInfo.if}</Text>
+                </View>
+            )}
+            {clientInfo.taxePro && (
+                <View style={styles.row}>
+                    <Text style={styles.label}>T.P:</Text>
+                    <Text>{clientInfo.taxePro}</Text>
+                </View>
+            )}
           </View>
         </View>
 
