@@ -37,15 +37,93 @@ pool.connect((err, client, release) => {
   `;
   
   client.query(createTableQuery, (err, result) => {
-    release();
     if (err) {
       return console.error('Error executing query', err.stack);
     }
     console.log('Table "documents" is ready');
   });
+
+  const createClientsTableQuery = `
+    CREATE TABLE IF NOT EXISTS clients (
+      id SERIAL PRIMARY KEY,
+      name TEXT NOT NULL,
+      address TEXT,
+      ice TEXT,
+      if_id TEXT,
+      taxe_pro TEXT,
+      phone TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )
+  `;
+
+  client.query(createClientsTableQuery, (err, result) => {
+    release();
+    if (err) {
+      return console.error('Error creating clients table', err.stack);
+    }
+    console.log('Table "clients" is ready');
+  });
 });
 
 // API Routes
+
+// --- Clients API ---
+
+// Get all clients
+app.get('/api/clients', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM clients ORDER BY name ASC');
+    res.json({
+      message: 'success',
+      data: result.rows
+    });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Create new client
+app.post('/api/clients', async (req, res) => {
+  try {
+    const { name, address, ice, if_id, taxe_pro, phone } = req.body;
+    const sql = 'INSERT INTO clients (name, address, ice, if_id, taxe_pro, phone) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *';
+    const params = [name, address, ice, if_id, taxe_pro, phone];
+    
+    const result = await pool.query(sql, params);
+    
+    res.json({
+      message: 'success',
+      data: result.rows[0]
+    });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// Update client
+app.put('/api/clients/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, address, ice, if_id, taxe_pro, phone } = req.body;
+    const sql = 'UPDATE clients SET name = $1, address = $2, ice = $3, if_id = $4, taxe_pro = $5, phone = $6 WHERE id = $7 RETURNING *';
+    const params = [name, address, ice, if_id, taxe_pro, phone, id];
+    
+    const result = await pool.query(sql, params);
+    
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'Client not found' });
+    }
+
+    res.json({
+      message: 'success',
+      data: result.rows[0]
+    });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+// --- Documents API ---
 
 // Get all documents
 app.get('/api/documents', async (req, res) => {
