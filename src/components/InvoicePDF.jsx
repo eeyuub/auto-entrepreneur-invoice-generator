@@ -1,6 +1,12 @@
 import React from 'react';
 import { Page, Text, View, Document, StyleSheet } from '@react-pdf/renderer';
 
+const formatDateFrench = (dateString) => {
+  if (!dateString) return '';
+  const [year, month, day] = dateString.split('-');
+  return `${day}/${month}/${year}`;
+};
+
 const styles = StyleSheet.create({
   page: {
     padding: 40,
@@ -213,7 +219,7 @@ const InvoicePDF = ({ data }) => {
           <View style={styles.headerRight}>
             <Text style={styles.title}>{docSettings.type}</Text>
             <Text style={{ fontSize: 12 }}>N° {docSettings.number}</Text>
-            <Text style={{ color: '#64748b', marginTop: 4 }}>Date: {docSettings.date}</Text>
+            <Text style={{ color: '#64748b', marginTop: 4 }}>Date: {formatDateFrench(docSettings.date)}</Text>
           </View>
         </View>
 
@@ -221,7 +227,6 @@ const InvoicePDF = ({ data }) => {
         <View style={styles.subHeader}>
           {/* My Info */}
           <View style={styles.box}>
-            <Text style={styles.boxTitle}>Émetteur (Auto-Entrepreneur)</Text>
             <View style={styles.row}>
               <Text style={styles.label}>ICE:</Text>
               <Text>{myInfo.ice}</Text>
@@ -247,10 +252,12 @@ const InvoicePDF = ({ data }) => {
                     <Text>{clientInfo.phone}</Text>
                 </View>
             )}
-            <View style={styles.row}>
-              <Text style={styles.label}>ICE:</Text>
-              <Text>{clientInfo.ice || 'N/A'}</Text>
-            </View>
+            {clientInfo.ice && (
+                <View style={styles.row}>
+                    <Text style={styles.label}>ICE:</Text>
+                    <Text>{clientInfo.ice}</Text>
+                </View>
+            )}
             {clientInfo.if && (
                 <View style={styles.row}>
                     <Text style={styles.label}>IF:</Text>
